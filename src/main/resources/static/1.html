@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我是一个模板</title>
+    <style>
+        .div{
+            background-color: black;
+            width: 1px;
+            height: 1px;
+            float: left;
+        }
+    </style>
+</head>
+<body>
+    <!--<div class="div" style="clear:both;background-color: rgb(246,246,246)"></div>-->
+    <!--<div class="div" div-data="green"></div>-->
+    <!--<div class="div" style="clear:both;" div-data="black"></div>-->
+###div###
+</body>
+<script>
+    var list = document.getElementsByClassName("div");
+    for(var i = 0;i<list.length;i++) {
+        var a = list.item(i);
+        a.style.backgroundColor = "rgb" + a.getAttribute("div-data");
+    }
+</script>
+</html>
