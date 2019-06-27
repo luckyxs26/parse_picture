@@ -1,5 +1,6 @@
 package com.luckyxs.conversion;
 
+import com.luckyxs.conversion.vo.ImgOffset;
 import com.luckyxs.conversion.vo.ImgVo;
 
 import javax.imageio.ImageIO;
@@ -157,5 +158,117 @@ public class ParseImg {
         in.close();
         out.close();
         return new File(path);
+    }
+
+
+    /**
+     * 设置透明度
+     * @param bfImg 需要设置的文件流
+     * @param ts 透明度 0-255
+     * @return BufferedImage
+     */
+    public static BufferedImage setUpTransparency(BufferedImage  bfImg,int ts){
+        if (ts>255)
+            ts = 255;
+        if (ts<0)
+            ts = 0;
+        try {
+            BufferedImage back = new BufferedImage(bfImg.getWidth(), bfImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            int height = bfImg.getHeight();
+            int width = bfImg.getWidth();
+            for (int i = 0;i<height;i++){
+                for (int n=0;n<width;n++){
+                    int rgb = bfImg.getRGB(n, i);
+                    Color color = new Color(rgb);
+                    Color newColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), ts);
+                    back.setRGB(n,i,newColor.getRGB());
+                }
+            }
+            return back;
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return null;
+        }
+    }
+
+    /**
+     * 对图片指定偏移范围进行透明设置
+     * @param bfImg 图片流
+     * @param imgOffset 偏移对象
+     * @param ts 透明度
+     * @return 图片流 BufferedImage
+     */
+    public static BufferedImage setUpSpecifiTransparency(BufferedImage  bfImg, ImgOffset imgOffset, int ts){
+        if (ts>255)
+            ts = 255;
+        if (ts<0)
+            ts = 0;
+        try {
+            BufferedImage back = new BufferedImage(bfImg.getWidth(), bfImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            int height = bfImg.getHeight();
+            int width = bfImg.getWidth();
+            for (int i = 0;i<height;i++){
+                for (int n=0;n<width;n++){
+                    int rgb = bfImg.getRGB(n, i);
+                    Color color = new Color(rgb);
+                    // 进行rgb偏移设置
+                    if (checkOffset(color,imgOffset))
+                        color = new Color(color.getRed(), color.getGreen(), color.getBlue(), ts);
+                    back.setRGB(n,i,color.getRGB());
+                }
+            }
+            return back;
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return null;
+        }
+    }
+
+
+    /**
+     * 图片读取
+     * @param imgPath  图片地址
+     * @return BufferedImage
+     */
+    public static BufferedImage readImg(String imgPath){
+        try {
+            BufferedImage read = ImageIO.read(new File(imgPath));
+            return read;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 图片格式转换
+     * @param img 图片读取流
+     * @param extent 转换之后格式 如: "jpg" "png"
+     * @param newFile 新图片
+     */
+    public static void imgToFormat(BufferedImage img ,String extent,String newFile){
+        try {
+            ImageIO.write(img,extent,new File(newFile));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * RGB值是否存在偏移值内
+     * @param color color
+     * @param imgOffset 偏移后对象
+     * @return true 存在 false 不存在
+     */
+    public static boolean checkOffset(Color color , ImgOffset imgOffset){
+        if (color.getRed() >= imgOffset.getrScope()[0] && color.getRed() <= imgOffset.getrScope()[1])
+            if (color.getGreen() >= imgOffset.getgScope()[0] && color.getGreen() <= imgOffset.getgScope()[1])
+                if (color.getBlue() >= imgOffset.getbScope()[0] && color.getBlue() <= imgOffset.getbScope()[1])
+                    return true;
+        return false;
+    }
+
+    public static int argbToRgb(int argb){
+        return 0;
     }
 }
